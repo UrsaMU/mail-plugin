@@ -1,7 +1,7 @@
-import type { IUrsamuSDK } from "../../@types/UrsamuSDK.ts";
+import type { IUrsamuSDK } from "jsr:@ursamu/ursamu";
+import { gameHooks } from "jsr:@ursamu/ursamu";
 import { mailDb, type IMail, MAIL_QUOTA } from "./mailDbo.ts";
 import { getMyMail, countPlayerMail, resolveNames, HR } from "./mailHelpers.ts";
-import { gameHooks } from "../../services/Hooks/GameHooks.ts";
 
 /** Start a new draft: @mail <target>=<subject> */
 export async function mailDraftNew(u: IUrsamuSDK, rawinput: string): Promise<void> {

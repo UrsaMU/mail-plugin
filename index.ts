@@ -1,16 +1,11 @@
 // Phase 1 — module load: registers all addCmd calls immediately
 import "./commands.ts";
 
-import type { IPlugin } from "../../@types/IPlugin.ts";
-import { registerPluginRoute } from "../../app.ts";
-import { gameHooks } from "../../services/Hooks/GameHooks.ts";
-import { wsService } from "../../services/WebSocket/index.ts";
-import { send } from "../../services/broadcast/index.ts";
-import { dbojs } from "../../services/Database/index.ts";
+import type { IPlugin, SessionEvent } from "jsr:@ursamu/ursamu";
+import { registerPluginRoute, gameHooks, wsService, send, dbojs } from "jsr:@ursamu/ursamu";
 import { getMyMail, runExpirySweep } from "./mailHelpers.ts";
 import { mailRouteHandler } from "./routes.ts";
 import { EXPIRY_SWEEP_MS } from "./mailDbo.ts";
-import type { SessionEvent } from "../../services/Hooks/GameHooks.ts";
 
 export type { IMail } from "./mailDbo.ts";
 

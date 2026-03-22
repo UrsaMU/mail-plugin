@@ -1,4 +1,4 @@
-import { DBO } from "../../services/Database/database.ts";
+import { DBO } from "jsr:@ursamu/ursamu";
 
 /** Maximum inbox messages per player before deliveries are skipped. */
 export const MAIL_QUOTA = 100;

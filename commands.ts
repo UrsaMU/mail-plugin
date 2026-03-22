@@ -1,5 +1,5 @@
-import { addCmd } from "../../services/commands/cmdParser.ts";
-import type { IUrsamuSDK } from "../../@types/UrsamuSDK.ts";
+import { addCmd } from "jsr:@ursamu/ursamu";
+import type { IUrsamuSDK } from "jsr:@ursamu/ursamu";
 import {
   mailList, mailRead, mailTrash, mailRestore, mailPurge,
   mailSave, mailUnsave,

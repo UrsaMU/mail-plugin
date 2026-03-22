@@ -1,7 +1,6 @@
 import { mailDb, type IMail, MAIL_QUOTA } from "./mailDbo.ts";
-import { dbojs } from "../../services/Database/index.ts";
+import { dbojs, gameHooks } from "jsr:@ursamu/ursamu";
 import { countPlayerMail } from "./mailHelpers.ts";
-import { gameHooks } from "../../services/Hooks/GameHooks.ts";
 
 const JSON_HEADERS = { "Content-Type": "application/json" };
 const json = (data: unknown, status = 200) =>

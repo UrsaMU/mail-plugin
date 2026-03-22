@@ -1,4 +1,4 @@
-import type { IUrsamuSDK } from "../../@types/UrsamuSDK.ts";
+import type { IUrsamuSDK } from "jsr:@ursamu/ursamu";
 import { mailDb, type IMail } from "./mailDbo.ts";
 import { getMyMail, HR, PAD, formatDate, MAIL_QUOTA } from "./mailHelpers.ts";
 
