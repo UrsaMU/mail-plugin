@@ -1,4 +1,4 @@
-import { dbojs } from "jsr:@ursamu/ursamu";
+import { dbojs } from "@ursamu/ursamu";
 import { mailDb, MAIL_QUOTA, type IMail } from "./mailDbo.ts";
 
 export { MAIL_QUOTA };

@@ -1,0 +1,17 @@
+{
+  "name": "@ursamu/mail-plugin",
+  "version": "2.3.0",
+  "description": "In-game mail system with drafts, folders, attachments, quota, expiry, and format hooks.",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "imports": {
+    "@ursamu/ursamu": "jsr:@ursamu/ursamu@^2.3.0",
+    "@std/assert": "jsr:@std/assert@^1.0.0"
+  },
+  "tasks": {
+    "check": "deno check --unstable-kv index.ts",
+    "lint": "deno lint",
+    "test": "deno test --allow-all --unstable-kv --no-check tests/"
+  }
+}

@@ -1,5 +1,5 @@
-import { addCmd } from "jsr:@ursamu/ursamu";
-import type { IUrsamuSDK } from "jsr:@ursamu/ursamu";
+import { addCmd } from "@ursamu/ursamu";
+import type { IUrsamuSDK } from "@ursamu/ursamu";
 import {
   mailList, mailRead, mailTrash, mailRestore, mailPurge,
   mailSave, mailUnsave,
@@ -34,6 +34,10 @@ Reading:
   @mail/trash                 List your trash folder.
   @mail/read <number>         Read a message (explicit form).
 
+Format hooks: set @mailformat / @mailrowformat on #0 (game-wide) or self.
+  @mailformat: %0 = default rendered inbox/trash block.
+  @mailrowformat: %0 = default rendered message row.
+
 Managing:
   @mail/reply <number>        Reply to a message.
   @mail/replyall <number>     Reply to all recipients.
@@ -51,7 +55,7 @@ Examples:
   @mail 3                     Read message #3.
   @mail/reply 3               Reply to message #3.`,
 
-  exec: async (u: IUrsamuSDK) => {
+  exec: (u: IUrsamuSDK) => {
     const sw      = (u.cmd.args[0] ?? "").toLowerCase().trim();
     const subArgs = (u.cmd.args[1] ?? "").trim();
 

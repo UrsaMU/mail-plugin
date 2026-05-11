@@ -1,35 +1,73 @@
-import type { IUrsamuSDK } from "jsr:@ursamu/ursamu";
+import type { IUrsamuSDK, IDBObj } from "@ursamu/ursamu";
+import { dbojs, resolveFormat, type FormatSlot } from "@ursamu/ursamu";
 import { mailDb, type IMail } from "./mailDbo.ts";
 import { getMyMail, HR, PAD, formatDate, MAIL_QUOTA } from "./mailHelpers.ts";
+
+/**
+ * Two-tier format lookup: check `#0` (game-wide skin) first, then the
+ * enactor (`u.me`) for a per-player skin. Returns null if neither yields
+ * an override. Mirrors the WHO/PS pattern in ursamu core.
+ */
+async function resolveGlobalFormat(
+  u: IUrsamuSDK,
+  slot: string,
+  defaultArg: string,
+): Promise<string | null> {
+  const root = await dbojs.queryOne({ id: "0" });
+  if (root) {
+    const rootObj = root as unknown as IDBObj;
+    const onRoot = await resolveFormat(u, rootObj, slot as FormatSlot, defaultArg);
+    if (onRoot != null) return onRoot;
+  }
+  return await resolveFormat(u, u.me, slot as FormatSlot, defaultArg);
+}
+
+/** Render a single mail row in the default style. */
+async function renderRow(u: IUrsamuSDK, m: IMail, idx: number): Promise<string> {
+  const fromId = m.from.replace("#", "");
+  const fromObj = await u.util.target(u.me, fromId).catch(() => null);
+  const fromName = fromObj?.name ?? "Unknown";
+  const flags = `[${m.read ? "-" : "U"}${m.replied ? "R" : "-"}${m.forwarded ? "F" : "-"}${m.starred ? "S" : "-"}----]`;
+  const charStr = `(${String((m.message ?? "").length).padStart(4)})`;
+  const num = String(idx + 1).padStart(3);
+  return `${flags} ${num} ${charStr}   From: ${PAD(fromName, 16)} Sub:  ${(m.subject ?? "(No Subject)").slice(0, 28)}`;
+}
 
 /** Display the player's inbox or trash folder listing. */
 export async function mailList(u: IUrsamuSDK, folder: "inbox" | "trash" = "inbox"): Promise<void> {
   const mails = (await getMyMail(u.me.id, folder)).sort((a, b) => a.date - b.date);
   const title = folder === "trash" ? " MAIL: Trash " : " MAIL: Inbox ";
   const hdrPad = Math.floor((77 - title.length) / 2);
-  u.send("-".repeat(hdrPad) + title + "-".repeat(77 - hdrPad - title.length));
+  const headerLine = "-".repeat(hdrPad) + title + "-".repeat(77 - hdrPad - title.length);
 
+  // Build per-row renderings with optional MAILROWFORMAT override.
+  const rows: string[] = [];
   if (mails.length === 0) {
-    u.send("  No messages.");
+    rows.push("  No messages.");
   } else {
     for (let i = 0; i < mails.length; i++) {
-      const m = mails[i];
-      const fromId = m.from.replace("#", "");
-      const fromObj = await u.util.target(u.me, fromId).catch(() => null);
-      const fromName = fromObj?.name ?? "Unknown";
-      const flags = `[${m.read ? "-" : "U"}${m.replied ? "R" : "-"}${m.forwarded ? "F" : "-"}${m.starred ? "S" : "-"}----]`;
-      const charStr = `(${String((m.message ?? "").length).padStart(4)})`;
-      const num = String(i + 1).padStart(3);
-      u.send(`${flags} ${num} ${charStr}   From: ${PAD(fromName, 16)} Sub:  ${(m.subject ?? "(No Subject)").slice(0, 28)}`);
+      const defaultRow = await renderRow(u, mails[i], i);
+      const rowOverride = await resolveGlobalFormat(u, "MAILROWFORMAT", defaultRow);
+      rows.push(rowOverride != null ? rowOverride : defaultRow);
     }
   }
 
-  u.send(HR);
+  // Build default block (used both as fallback and as %0 for MAILFORMAT).
+  const lines: string[] = [headerLine, ...rows, HR];
   if (folder === "inbox") {
     const count = mails.length;
     const warn = count >= MAIL_QUOTA * 0.9 ? " %ch%cy[NEAR QUOTA]%cn" : "";
-    u.send(`  ${count}/${MAIL_QUOTA} messages.${warn}`);
+    lines.push(`  ${count}/${MAIL_QUOTA} messages.${warn}`);
   }
+  const defaultBlock = lines.join("\n");
+
+  const blockOverride = await resolveGlobalFormat(u, "MAILFORMAT", defaultBlock);
+  if (blockOverride != null) {
+    u.send(blockOverride);
+    return;
+  }
+
+  for (const line of lines) u.send(line);
 }
 
 /** Read a single message by 1-based index. Marks as read. */
