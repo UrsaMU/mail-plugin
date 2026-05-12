@@ -12,7 +12,7 @@
     "jsr:@std/path@0.224": "0.224.0",
     "jsr:@std/path@0.224.0": "0.224.0",
     "jsr:@std/semver@1": "1.0.8",
-    "jsr:@ursamu/ursamu@^2.3.0": "2.3.0",
+    "jsr:@ursamu/ursamu@^2.3.3": "2.3.3",
     "jsr:@zaubrik/djwt@^3.0.2": "3.0.2",
     "npm:@deno/sandbox@0.10.0": "0.10.0",
     "npm:@digibear/tags@1.0.0": "1.0.0",
@@ -63,8 +63,8 @@
     "@std/semver@1.0.8": {
       "integrity": "dc830e8b8b6a380c895d53fbfd1258dc253704ca57bbe1629ac65fd7830179b7"
     },
-    "@ursamu/ursamu@2.3.0": {
-      "integrity": "fff2f8138300117f88e1f06631fe109491f1df73a767d54fa880eb11553753fb",
+    "@ursamu/ursamu@2.3.3": {
+      "integrity": "f0bfc3ef16b5e8c8e3ebcdfb4a6da6ca24c374b4e0b199cbb411fb95e23611e6",
       "dependencies": [
         "jsr:@std/dotenv",
         "jsr:@std/flags",
@@ -449,7 +449,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@1",
-      "jsr:@ursamu/ursamu@^2.3.0"
+      "jsr:@ursamu/ursamu@^2.3.3"
     ]
   }
 }
