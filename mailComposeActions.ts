@@ -1,5 +1,5 @@
-import type { IUrsamuSDK } from "jsr:@ursamu/ursamu";
-import { gameHooks } from "jsr:@ursamu/ursamu";
+import type { IUrsamuSDK } from "@ursamu/ursamu";
+import { gameHooks } from "@ursamu/ursamu";
 import { mailDb, type IMail, MAIL_QUOTA } from "./mailDbo.ts";
 import { getMyMail, countPlayerMail, resolveNames, HR } from "./mailHelpers.ts";
 

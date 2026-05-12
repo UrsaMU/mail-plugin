@@ -1,8 +1,8 @@
 // Phase 1 — module load: registers all addCmd calls immediately
 import "./commands.ts";
 
-import type { IPlugin, SessionEvent } from "jsr:@ursamu/ursamu";
-import { registerPluginRoute, gameHooks, wsService, send, dbojs } from "jsr:@ursamu/ursamu";
+import type { IPlugin, SessionEvent } from "@ursamu/ursamu";
+import { registerPluginRoute, gameHooks, wsService, send, dbojs } from "@ursamu/ursamu";
 import { getMyMail, runExpirySweep } from "./mailHelpers.ts";
 import { mailRouteHandler } from "./routes.ts";
 import { EXPIRY_SWEEP_MS } from "./mailDbo.ts";
@@ -40,8 +40,8 @@ let _expirySweepTimer: ReturnType<typeof setInterval> | null = null;
 
 export const plugin: IPlugin = {
   name: "mail",
-  version: "1.0.0",
-  description: "In-game mail system with drafts, folders, attachments, quota, and expiry.",
+  version: "2.3.0",
+  description: "In-game mail system with drafts, folders, attachments, quota, expiry, and format hooks.",
 
   init: () => {
     registerPluginRoute("/api/v1/mail", mailRouteHandler);

@@ -1,5 +1,5 @@
 import { mailDb, type IMail, MAIL_QUOTA } from "./mailDbo.ts";
-import { dbojs, gameHooks } from "jsr:@ursamu/ursamu";
+import { dbojs, gameHooks } from "@ursamu/ursamu";
 import { countPlayerMail } from "./mailHelpers.ts";
 
 const JSON_HEADERS = { "Content-Type": "application/json" };
