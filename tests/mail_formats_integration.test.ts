@@ -166,30 +166,20 @@ Deno.test("mail: MAILROWFORMAT plugin handler replaces each row", { ...OPTS, ...
 
 Deno.test("mail: two-tier — #0 attr wins over enactor attr", { ...OPTS, ...SLOW }, async () => {
   await seed({ messages: 1 });
-  // Mock attr.get returns different values for #0 vs the enactor.
+
+  // Force the softcode-attr path to throw so resolveFormat falls through to
+  // the plugin-handler chain — that's the only public surface we can use to
+  // observe the order in which targets are consulted. (resolveFormat catches
+  // softcode failures and routes to handlers; see ursamu's resolveFormat.ts.)
   const u = mockU({
-    attrGet: (id, name) => {
-      if (name !== "MAILFORMAT") return null;
-      if (id === ROOT) return "ROOT_WINS";
-      if (id === ACTOR) return "ENACTOR_LOSES";
-      return null;
-    },
+    attrGet: () => { throw new Error("force fall-through"); },
   });
 
-  // resolveFormat will invoke softcodeService.runSoftcode on the raw attr.
-  // We can't import softcodeService publicly, so we patch u.attr.get to
-  // throw — that exercises the fall-through path AND lets us validate
-  // two-tier ordering: #0 is consulted before the enactor. We instead use
-  // a plugin handler to assert which target was passed first.
   const seen: string[] = [];
   const handler: FormatHandler = (_u, target, _arg) => { seen.push(target.id); return null; };
   registerFormatHandler("MAILFORMAT" as FormatSlot, handler);
   try {
     await mailList(u);
-    // resolveFormat is called once per target until one returns non-null.
-    // With u.attr.get returning a string, softcodeService eval may fail
-    // (no public softcode); regardless, ordering of calls to plugin handler
-    // (which runs after the attr step) reflects two-tier ordering.
     assertEquals(seen[0], ROOT, "should consult #0 first");
     assertEquals(seen[1], ACTOR, "then fall through to enactor");
   } finally {
