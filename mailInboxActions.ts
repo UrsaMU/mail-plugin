@@ -1,26 +1,7 @@
-import type { IUrsamuSDK, IDBObj } from "@ursamu/ursamu";
-import { dbojs, resolveFormat, type FormatSlot } from "@ursamu/ursamu";
+import type { IUrsamuSDK } from "@ursamu/ursamu";
+import { resolveGlobalFormat, type FormatSlot } from "@ursamu/ursamu";
 import { mailDb, type IMail } from "./mailDbo.ts";
 import { getMyMail, HR, PAD, formatDate, MAIL_QUOTA } from "./mailHelpers.ts";
-
-/**
- * Two-tier format lookup: check `#0` (game-wide skin) first, then the
- * enactor (`u.me`) for a per-player skin. Returns null if neither yields
- * an override. Mirrors the WHO/PS pattern in ursamu core.
- */
-async function resolveGlobalFormat(
-  u: IUrsamuSDK,
-  slot: string,
-  defaultArg: string,
-): Promise<string | null> {
-  const root = await dbojs.queryOne({ id: "0" });
-  if (root) {
-    const rootObj = root as unknown as IDBObj;
-    const onRoot = await resolveFormat(u, rootObj, slot as FormatSlot, defaultArg);
-    if (onRoot != null) return onRoot;
-  }
-  return await resolveFormat(u, u.me, slot as FormatSlot, defaultArg);
-}
 
 /** Render a single mail row in the default style. */
 async function renderRow(u: IUrsamuSDK, m: IMail, idx: number): Promise<string> {
@@ -47,7 +28,7 @@ export async function mailList(u: IUrsamuSDK, folder: "inbox" | "trash" = "inbox
   } else {
     for (let i = 0; i < mails.length; i++) {
       const defaultRow = await renderRow(u, mails[i], i);
-      const rowOverride = await resolveGlobalFormat(u, "MAILROWFORMAT", defaultRow);
+      const rowOverride = await resolveGlobalFormat(u, "MAILROWFORMAT" as FormatSlot, defaultRow);
       rows.push(rowOverride != null ? rowOverride : defaultRow);
     }
   }
@@ -61,7 +42,7 @@ export async function mailList(u: IUrsamuSDK, folder: "inbox" | "trash" = "inbox
   }
   const defaultBlock = lines.join("\n");
 
-  const blockOverride = await resolveGlobalFormat(u, "MAILFORMAT", defaultBlock);
+  const blockOverride = await resolveGlobalFormat(u, "MAILFORMAT" as FormatSlot, defaultBlock);
   if (blockOverride != null) {
     u.send(blockOverride);
     return;
